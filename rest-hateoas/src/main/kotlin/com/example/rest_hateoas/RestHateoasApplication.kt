@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class RestHateoasApplication
 
 fun main(args: Array<String>) {
-	runApplication<RestHateoasApplication>(*args)
+    runApplication<RestHateoasApplication>(*args)
 }
