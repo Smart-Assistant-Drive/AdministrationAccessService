@@ -1,4 +1,4 @@
-package com.example.rest_hateoas
+package com.example.restHateoas.interfaceAdaptersLayer.controllers.dto
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty

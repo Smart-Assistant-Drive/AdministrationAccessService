@@ -1,4 +1,4 @@
-package com.example.rest_hateoas
+package com.example.restHateoas
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
