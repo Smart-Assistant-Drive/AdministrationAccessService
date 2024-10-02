@@ -1,79 +1,42 @@
 package com.example.restHateoas.architectureTest
 
 import com.tngtech.archunit.core.importer.ClassFileImporter
-import com.tngtech.archunit.lang.ArchRule
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
+import com.tngtech.archunit.library.Architectures.layeredArchitecture
 import kotlin.test.Test
 
 
 class CleanArchitectureTest {
-    @Test
-    fun domainLayerRules() {
-        val importedClasses = ClassFileImporter().importPackages("com.example.restHateoas")
-
-        val ruleDomainLayerAvoidDependency: ArchRule =
-            noClasses().that().resideInAPackage("..domainLayer..")
-                .should().dependOnClassesThat().resideInAPackage("..businessLayer..")
-                .orShould().dependOnClassesThat().resideInAPackage("..interfaceAdaptersLayer..")
-
-        ruleDomainLayerAvoidDependency.check(importedClasses)
-
-        val ruleDomainLayerPublic: ArchRule = classes()
-            .that().resideInAPackage("..domainLayer..")
-            .should().onlyBeAccessed()
-            .byAnyPackage("..domainLayer..", "..businessLayer..", "..interfaceAdaptersLayer..")
-
-        ruleDomainLayerPublic.check(importedClasses)
-
-    }
 
     @Test
-    fun businessLayerRules() {
+    fun layerDependencies() {
         val importedClasses = ClassFileImporter().importPackages("com.example.restHateoas")
+        val cleanArchitecture = layeredArchitecture()
+            .consideringOnlyDependenciesInLayers()
+            .layer("Domain").definedBy("..domainLayer..")
+            .layer("Business").definedBy("..businessLayer..")
+            .layer("Adapter").definedBy("..interfaceAdaptersLayer..")
 
-        val ruleBusinessLayerAvoidDependency: ArchRule =
-            noClasses().that().resideInAPackage("..businessLayer..")
-                .should().dependOnClassesThat().resideInAPackage("..interfaceAdaptersLayer..")
+            .whereLayer("Adapter").mayNotBeAccessedByAnyLayer()
+            .whereLayer("Business").mayOnlyBeAccessedByLayers("Adapter")
+            .whereLayer("Domain").mayOnlyBeAccessedByLayers("Business")
 
-        ruleBusinessLayerAvoidDependency.check(importedClasses)
-
-        val ruleBusinessLayerPublic: ArchRule = classes()
-            .that().resideInAPackage("..businessLayer..")
-            .should().onlyBeAccessed().byAnyPackage("..businessLayer..", "..interfaceAdaptersLayer..")
-            .orShould().onlyBeAccessed().byClassesThat().areTopLevelClasses()
-
-        ruleBusinessLayerPublic.check(importedClasses)
-    }
-
-    @Test
-    fun interfaceAdaptersLayerRules() {
-        val importedClasses = ClassFileImporter().importPackages("com.example.restHateoas")
-
-        val ruleInterfaceAdaptersLayerPublic: ArchRule = classes()
-            .that().resideInAPackage("..interfaceAdaptersLayer..")
-            .should().onlyBeAccessed().byAnyPackage("..interfaceAdaptersLayer..")
-            .orShould().onlyBeAccessed().byClassesThat().areTopLevelClasses()
-
-        ruleInterfaceAdaptersLayerPublic.check(importedClasses)
+        cleanArchitecture.check(importedClasses)
     }
 
     @Test
     fun everythingPassThroughBusinessLayer() {
         val importedClasses = ClassFileImporter().importPackages("com.example.restHateoas")
+        val ruleEverythingPassThroughBusinessLayer = layeredArchitecture()
+            .consideringOnlyDependenciesInLayers()
+            .layer("Business").definedBy("..businessLayer..")
+            .layer("Controller").definedBy("..interfaceAdaptersLayer.controllers..")
+            .layer("Persistence").definedBy("..interfaceAdaptersLayer.persistence..")
 
-        val ruleEverythingPassThroughBusinessLayerPersistence: ArchRule = classes()
-            .that().resideInAPackage("..interfaceAdaptersLayer.persistence..")
-            .should().dependOnClassesThat().resideInAPackage("..businessLayer..")
-            .orShould().dependOnClassesThat().resideOutsideOfPackages("com.example.restHateoas")
+            .whereLayer("Persistence").mayNotBeAccessedByAnyLayer()
+            .whereLayer("Controller").mayNotBeAccessedByAnyLayer()
+            .whereLayer("Business").mayOnlyBeAccessedByLayers("Controller", "Persistence")
 
-        ruleEverythingPassThroughBusinessLayerPersistence.check(importedClasses)
 
-        val ruleEverythingPassThroughBusinessLayerController: ArchRule = classes()
-            .that().resideInAPackage("..interfaceAdaptersLayer.controllers..")
-            .should().dependOnClassesThat().resideInAPackage("..businessLayer..")
-            .orShould().dependOnClassesThat().resideOutsideOfPackages("com.example.restHateoas")
-
-        ruleEverythingPassThroughBusinessLayerController.check(importedClasses)
+        ruleEverythingPassThroughBusinessLayer.check(importedClasses)
     }
 }
