@@ -22,6 +22,8 @@ dependencies {
 	implementation(libs.springdoc.openapi)
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+	testImplementation(libs.mockito.kotlin)
+	testImplementation(libs.archunit)
 	testImplementation(libs.bundles.cucmber.test)
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
