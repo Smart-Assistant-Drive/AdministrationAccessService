@@ -3,6 +3,7 @@ plugins {
 	alias(libs.plugins.kotlin.plugin.spring)
 	alias(libs.plugins.spring.boot)
 	alias(libs.plugins.spring.dependency.management)
+	alias(libs.plugins.gitSemVer) apply true
 }
 
 java {
@@ -20,6 +21,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-hateoas")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation(libs.springdoc.openapi)
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation(libs.mockito.kotlin)
@@ -33,6 +35,11 @@ kotlin {
 		freeCompilerArgs.addAll("-Xjsr305=strict")
 	}
 }
+
+springBoot {
+	buildInfo()
+}
+
 
 tasks.withType<Test> {
 	useJUnitPlatform()
