@@ -1,6 +1,5 @@
 package com.example.restHateoas.interfaceAdaptersLayer.controllers.dto
 
-import com.example.restHateoas.businessLayer.adapter.UserRequestModel
 import com.example.restHateoas.businessLayer.adapter.UserResponseModel
 import com.example.restHateoas.interfaceAdaptersLayer.controllers.GreetingController
 import com.fasterxml.jackson.annotation.JsonCreator
@@ -20,11 +19,11 @@ class UserResponseDto @JsonCreator constructor(
     ) val time: String
 ) : RepresentationModel<UserResponseDto?>()
 
-fun UserResponseModel.toDto(userRequestModel: UserRequestModel): UserResponseDto {
+fun UserResponseModel.toDto(userRequestDto: UserRequestDto): UserResponseDto {
     val responseTime = LocalDateTime.parse(time)
     val jsonTime = responseTime.format(DateTimeFormatter.ofPattern("hh:mm:ss"))
     return UserResponseDto(name, jsonTime).add(
-        WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GreetingController::class.java).create(userRequestModel))
+        WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GreetingController::class.java).create(userRequestDto))
             .withSelfRel()
     )
 }

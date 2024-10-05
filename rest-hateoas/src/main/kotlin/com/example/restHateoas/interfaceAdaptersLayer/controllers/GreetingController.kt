@@ -4,9 +4,7 @@ import com.example.restHateoas.businessLayer.adapter.UserRequestModel
 import com.example.restHateoas.businessLayer.boundaries.UserInputBoundary
 import com.example.restHateoas.businessLayer.exception.PasswordToShortException
 import com.example.restHateoas.businessLayer.exception.UserAlreadyPresentException
-import com.example.restHateoas.interfaceAdaptersLayer.controllers.dto.Greeting
-import com.example.restHateoas.interfaceAdaptersLayer.controllers.dto.UserResponseDto
-import com.example.restHateoas.interfaceAdaptersLayer.controllers.dto.toDto
+import com.example.restHateoas.interfaceAdaptersLayer.controllers.dto.*
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class GreetingController(val userInput: UserInputBoundary) {
 
-    @PostMapping("/user")
     @Operation(summary = "Create user",
         description = "Create user",
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -38,8 +35,9 @@ class GreetingController(val userInput: UserInputBoundary) {
                 content = [Content()]),
             ApiResponse(responseCode = "500", description = "Internal server error",
                 content = [Content()])])
-    fun create(@RequestBody requestModel: UserRequestModel): HttpEntity<UserResponseDto> {
-        val result = userInput.createUser(requestModel)
+    @PostMapping("/user")
+    fun create(@RequestBody requestModel: UserRequestDto): HttpEntity<UserResponseDto> {
+        val result = userInput.createUser(requestModel.toModel())
         return if (result.isSuccess) {
             ResponseEntity(result.getOrNull()!!.toDto(requestModel), HttpStatus.CREATED)
         } else {
