@@ -2,13 +2,17 @@ package com.example.restHateoas.interfaceAdaptersLayer.persistence
 
 import com.example.restHateoas.businessLayer.adapter.UserDataSourceRequestModel
 import com.example.restHateoas.businessLayer.boundaries.UserRegisterDataSourceGateway
+import org.bson.Document
+import org.springframework.data.mongodb.core.MongoTemplate
 
-class UserRegisterDataSourceGatewayImpl : UserRegisterDataSourceGateway {
+class UserRegisterDataSourceGatewayImpl(private val mongoTemplate: MongoTemplate) : UserRegisterDataSourceGateway {
     override fun existsByName(name: String): Boolean {
-        return false
+        return mongoTemplate.getCollection("users").find(Document("name", name)).first() != null
     }
 
     override fun save(requestModel: UserDataSourceRequestModel) {
-        // Save user
+        mongoTemplate.getCollection("users").insertOne(
+            Document("name", requestModel.name).append("password", requestModel.password)
+        )
     }
 }

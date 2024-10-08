@@ -19,15 +19,18 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-hateoas")
+	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation(libs.springdoc.openapi)
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation(libs.mockito.kotlin)
 	testImplementation(libs.archunit)
 	testImplementation(libs.bundles.cucmber.test)
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	developmentOnly("org.springframework.boot:spring-boot-devtools")
 }
 
 kotlin {
