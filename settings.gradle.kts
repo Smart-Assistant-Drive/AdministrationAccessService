@@ -19,6 +19,6 @@ gitHooks {
     createHooks(true)
 }
 
-rootProject.name = "Spring-test"
+rootProject.name = "Administration access service"
 
-include("rest-hateoas")
+include("rest")

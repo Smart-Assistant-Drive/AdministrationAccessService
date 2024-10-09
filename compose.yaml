@@ -1,7 +1,7 @@
 services:
   gateway:
     build:
-      context: ./rest-hateoas
+      context: rest
       args:
         - JAR_FILE=./build/libs/*.jar
     ports:
