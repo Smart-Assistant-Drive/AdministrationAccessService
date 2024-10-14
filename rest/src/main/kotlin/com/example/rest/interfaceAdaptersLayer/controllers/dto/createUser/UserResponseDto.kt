@@ -1,9 +1,10 @@
-package com.example.rest.interfaceAdaptersLayer.controllers.dto
+package com.example.rest.interfaceAdaptersLayer.controllers.dto.createUser
 
 import com.example.rest.businessLayer.adapter.UserResponseModel
-import com.example.rest.interfaceAdaptersLayer.controllers.GreetingController
+import com.example.rest.interfaceAdaptersLayer.controllers.AccessController
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import org.springframework.hateoas.Link
 import org.springframework.hateoas.RepresentationModel
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder
 import java.time.LocalDateTime
@@ -15,15 +16,15 @@ class UserResponseDto @JsonCreator constructor(
         "name"
     ) val name: String,
     @param:JsonProperty(
+        "token"
+    ) val token: String,
+    @param:JsonProperty(
         "time"
     ) val time: String
-) : RepresentationModel<UserResponseDto?>()
+) : RepresentationModel<UserResponseDto>()
 
-fun UserResponseModel.toDto(userRequestDto: UserRequestDto): UserResponseDto {
+fun UserResponseModel.toDto(links: List<Link>): UserResponseDto {
     val responseTime = LocalDateTime.parse(time)
     val jsonTime = responseTime.format(DateTimeFormatter.ofPattern("hh:mm:ss"))
-    return UserResponseDto(name, jsonTime).add(
-        WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GreetingController::class.java).create(userRequestDto))
-            .withSelfRel()
-    )
+    return UserResponseDto(name, token, jsonTime).add(links)
 }
