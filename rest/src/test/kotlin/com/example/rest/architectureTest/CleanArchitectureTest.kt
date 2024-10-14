@@ -9,7 +9,7 @@ class CleanArchitectureTest {
 
     @Test
     fun layerDependencies() {
-        val importedClasses = ClassFileImporter().importPackages("com.example.restHateoas")
+        val importedClasses = ClassFileImporter().importPackages("com.example.rest")
         val cleanArchitecture = layeredArchitecture()
             .consideringOnlyDependenciesInLayers()
             .layer("Domain").definedBy("..domainLayer..")
@@ -18,23 +18,25 @@ class CleanArchitectureTest {
 
             .whereLayer("Adapter").mayNotBeAccessedByAnyLayer()
             .whereLayer("Business").mayOnlyBeAccessedByLayers("Adapter")
-            .whereLayer("Domain").mayOnlyBeAccessedByLayers("Business")
+            .whereLayer("Domain").mayOnlyBeAccessedByLayers("Business", "Adapter")
 
         cleanArchitecture.check(importedClasses)
     }
 
     @Test
     fun everythingPassThroughBusinessLayer() {
-        val importedClasses = ClassFileImporter().importPackages("com.example.restHateoas")
+        val importedClasses = ClassFileImporter().importPackages("com.example.rest")
         val ruleEverythingPassThroughBusinessLayer = layeredArchitecture()
             .consideringOnlyDependenciesInLayers()
             .layer("Business").definedBy("..businessLayer..")
             .layer("Controller").definedBy("..interfaceAdaptersLayer.controllers..")
             .layer("Persistence").definedBy("..interfaceAdaptersLayer.persistence..")
+            .layer("Security").definedBy("..interfaceAdaptersLayer.security..")
 
             .whereLayer("Persistence").mayNotBeAccessedByAnyLayer()
             .whereLayer("Controller").mayNotBeAccessedByAnyLayer()
-            .whereLayer("Business").mayOnlyBeAccessedByLayers("Controller", "Persistence")
+            .whereLayer("Security").mayNotBeAccessedByAnyLayer()
+            .whereLayer("Business").mayOnlyBeAccessedByLayers("Controller", "Persistence", "Security")
 
 
         ruleEverythingPassThroughBusinessLayer.check(importedClasses)
