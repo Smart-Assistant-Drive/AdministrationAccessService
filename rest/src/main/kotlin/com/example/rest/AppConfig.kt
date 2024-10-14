@@ -3,6 +3,7 @@ package com.example.rest
 import com.example.rest.businessLayer.UserRegisterUseCase
 import com.example.rest.businessLayer.boundaries.UserInputBoundary
 import com.example.rest.interfaceAdaptersLayer.persistence.UserRegisterDataSourceGatewayImpl
+import com.example.rest.interfaceAdaptersLayer.security.UserSecurityImpl
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.MongoCredential
@@ -12,6 +13,9 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.invoke
+import org.springframework.security.web.SecurityFilterChain
 
 
 @Configuration
@@ -20,7 +24,10 @@ class AppConfig {
     @Bean
     fun userInput(environment: Environment): UserInputBoundary {
         val userRegisterDataSourceGateway = UserRegisterDataSourceGatewayImpl(mongoTemplate(environment))
-        val userRegisterUseCase = UserRegisterUseCase(userRegisterDataSourceGateway)
+        val key = environment.getProperty("security.jwt.secret-key")
+        assert(key != null)
+        val security = UserSecurityImpl(key!!)
+        val userRegisterUseCase = UserRegisterUseCase(userRegisterDataSourceGateway, security)
         return userRegisterUseCase
     }
 
@@ -44,5 +51,17 @@ class AppConfig {
     fun mongoTemplate(environment: Environment): MongoTemplate {
         val database = environment.getProperty("spring.data.mongodb.database") ?: "test"
         return MongoTemplate(mongo(environment), database)
+    }
+
+    @Bean
+    @Throws(java.lang.Exception::class)
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
+        http {
+            csrf { disable() }
+            authorizeRequests {
+                authorize(anyRequest, permitAll)
+            }
+        }
+        return http.build()
     }
 }
