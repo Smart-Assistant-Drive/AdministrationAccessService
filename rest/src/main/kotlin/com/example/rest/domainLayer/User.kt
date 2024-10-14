@@ -1,21 +1,19 @@
 package com.example.rest.domainLayer
 
 interface User {
-    fun passwordIsValid(): Boolean
 
     val name: String
 
     val password: String
 
+    val role: Role
+
     companion object {
-        fun create(name: String, password: String): User {
+        fun create(name: String, password: String, role: Role): User {
             return object : User {
                 override val name: String = name
                 override val password: String = password
-
-                override fun passwordIsValid(): Boolean {
-                    return password.isNotBlank() && password.length > 5
-                }
+                override val role: Role = role
             }
         }
     }
