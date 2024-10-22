@@ -15,17 +15,14 @@ import javax.crypto.SecretKey
 class UserSecurityImpl(key: String) : UserSecurity {
 
     private val signInKey: SecretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(key))
-
     private val tokenDuration = Duration.ofDays(1)
+    private val encoder = BCryptPasswordEncoder()
 
     override fun getHash(password: String): String {
-        val encoder = BCryptPasswordEncoder()
-        val hashedPassword = encoder.encode(password)
-        return hashedPassword
+        return encoder.encode(password)
     }
 
     override fun checkPassword(password: String, hash: String): Boolean {
-        val encoder = BCryptPasswordEncoder()
         return encoder.matches(password, hash)
     }
 
@@ -63,12 +60,11 @@ class UserSecurityImpl(key: String) : UserSecurity {
     }
 
     private fun extractAllClaims(token: String): Claims {
-        val payload = Jwts
+        return Jwts
             .parser()
             .verifyWith(signInKey)
             .build()
             .parseSignedClaims(token)
             .payload
-        return payload
     }
 }
