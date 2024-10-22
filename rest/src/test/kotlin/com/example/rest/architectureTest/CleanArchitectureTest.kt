@@ -4,7 +4,6 @@ import com.tngtech.archunit.core.importer.ClassFileImporter
 import com.tngtech.archunit.library.Architectures.layeredArchitecture
 import kotlin.test.Test
 
-
 class CleanArchitectureTest {
 
     @Test
@@ -15,11 +14,9 @@ class CleanArchitectureTest {
             .layer("Domain").definedBy("..domainLayer..")
             .layer("Business").definedBy("..businessLayer..")
             .layer("Adapter").definedBy("..interfaceAdaptersLayer..")
-
             .whereLayer("Adapter").mayNotBeAccessedByAnyLayer()
             .whereLayer("Business").mayOnlyBeAccessedByLayers("Adapter")
             .whereLayer("Domain").mayOnlyBeAccessedByLayers("Business", "Adapter")
-
         cleanArchitecture.check(importedClasses)
     }
 
@@ -32,13 +29,10 @@ class CleanArchitectureTest {
             .layer("Controller").definedBy("..interfaceAdaptersLayer.controllers..")
             .layer("Persistence").definedBy("..interfaceAdaptersLayer.persistence..")
             .layer("Security").definedBy("..interfaceAdaptersLayer.security..")
-
             .whereLayer("Persistence").mayNotBeAccessedByAnyLayer()
             .whereLayer("Controller").mayNotBeAccessedByAnyLayer()
             .whereLayer("Security").mayNotBeAccessedByAnyLayer()
             .whereLayer("Business").mayOnlyBeAccessedByLayers("Controller", "Persistence", "Security")
-
-
         ruleEverythingPassThroughBusinessLayer.check(importedClasses)
     }
 }

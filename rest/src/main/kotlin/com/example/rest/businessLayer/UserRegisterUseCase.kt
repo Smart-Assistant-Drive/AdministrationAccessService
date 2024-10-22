@@ -1,10 +1,20 @@
 package com.example.rest.businessLayer
 
-import com.example.rest.businessLayer.adapter.*
+import com.example.rest.businessLayer.adapter.LoginRequestModel
+import com.example.rest.businessLayer.adapter.LoginResponseModel
+import com.example.rest.businessLayer.adapter.TokenResponseModel
+import com.example.rest.businessLayer.adapter.UserDataSourceRequestModel
+import com.example.rest.businessLayer.adapter.UserRequestModel
+import com.example.rest.businessLayer.adapter.UserResponseModel
 import com.example.rest.businessLayer.boundaries.UserInputBoundary
 import com.example.rest.businessLayer.boundaries.UserRegisterDataSourceGateway
 import com.example.rest.businessLayer.boundaries.UserSecurity
-import com.example.rest.businessLayer.exception.*
+import com.example.rest.businessLayer.exception.InvalidTokenException
+import com.example.rest.businessLayer.exception.PasswordToShortException
+import com.example.rest.businessLayer.exception.TokenExpiredException
+import com.example.rest.businessLayer.exception.UserAlreadyPresentException
+import com.example.rest.businessLayer.exception.UserNotFound
+import com.example.rest.businessLayer.exception.WrongPasswordException
 import com.example.rest.domainLayer.User
 import com.example.rest.domainLayer.policy.PasswordPolicy
 import java.time.LocalDateTime
@@ -13,7 +23,6 @@ class UserRegisterUseCase(
     private val userDataSourceGateway: UserRegisterDataSourceGateway,
     private val userSecurity: UserSecurity,
 ) : UserInputBoundary {
-
     override fun createUser(requestModel: UserRequestModel): Result<UserResponseModel> {
         if (userDataSourceGateway.existsByName(requestModel.name)) {
             return Result.failure(UserAlreadyPresentException())
@@ -24,13 +33,14 @@ class UserRegisterUseCase(
         val hashedPassword = userSecurity.getHash(requestModel.password)
         val user: User = User.create(requestModel.name, hashedPassword, requestModel.role)
         val now = LocalDateTime.now()
-        val userDataSourceModel = UserDataSourceRequestModel(
-            user.name,
-            hashedPassword,
-            user.role,
-            now,
-            listOf(hashedPassword)
-        )
+        val userDataSourceModel =
+            UserDataSourceRequestModel(
+                user.name,
+                hashedPassword,
+                user.role,
+                now,
+                listOf(hashedPassword),
+            )
         userDataSourceGateway.save(userDataSourceModel)
         val token = userSecurity.generateToken(user.name)
 

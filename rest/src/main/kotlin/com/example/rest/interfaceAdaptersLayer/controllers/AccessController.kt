@@ -2,7 +2,12 @@ package com.example.rest.interfaceAdaptersLayer.controllers
 
 import com.example.rest.businessLayer.adapter.UserRequestModel
 import com.example.rest.businessLayer.boundaries.UserInputBoundary
-import com.example.rest.businessLayer.exception.*
+import com.example.rest.businessLayer.exception.InvalidTokenException
+import com.example.rest.businessLayer.exception.PasswordToShortException
+import com.example.rest.businessLayer.exception.TokenExpiredException
+import com.example.rest.businessLayer.exception.UserAlreadyPresentException
+import com.example.rest.businessLayer.exception.UserNotFound
+import com.example.rest.businessLayer.exception.WrongPasswordException
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.createUser.UserRequestDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.createUser.UserResponseDto
 import com.example.rest.interfaceAdaptersLayer.controllers.dto.createUser.toDto
@@ -22,62 +27,86 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
-
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
+import io.swagger.v3.oas.annotations.parameters.RequestBody as SwaggerRequestBody
 
 @RestController
-class AccessController(val userInput: UserInputBoundary) {
-
+class AccessController(
+    val userInput: UserInputBoundary,
+) {
     @Operation(
         summary = "Create user",
         description = "Create user",
-        requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
-            content = [Content(
-                mediaType = "application/json",
-                schema = Schema(implementation = UserRequestModel::class)
-            )],
-            required = true
-        ),
+        requestBody =
+            SwaggerRequestBody(
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = UserRequestModel::class),
+                    ),
+                ],
+                required = true,
+            ),
         responses = [
             ApiResponse(
-                responseCode = "201", description = "Created user",
-                content = [Content(
-                    mediaType = "application/json",
-                    schema = Schema(implementation = UserResponseDto::class)
-                )]
+                responseCode = "201",
+                description = "Created user",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = UserResponseDto::class),
+                    ),
+                ],
             ),
             ApiResponse(
-                responseCode = "400", description = "Invalid user",
-                content = [Content(
-                    mediaType = "application/json",
-                    schema = Schema(implementation = String::class)
-                )]
+                responseCode = "400",
+                description = "Invalid user",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = String::class),
+                    ),
+                ],
             ),
             ApiResponse(
-                responseCode = "409", description = "User already exists",
-                content = [Content(
-                    mediaType = "application/json",
-                    schema = Schema(implementation = String::class)
-                )]
+                responseCode = "409",
+                description = "User already exists",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = String::class),
+                    ),
+                ],
             ),
             ApiResponse(
-                responseCode = "500", description = "Internal server error",
-                content = [Content()]
-            )]
+                responseCode = "500",
+                description = "Internal server error",
+                content = [Content()],
+            ),
+        ],
     )
     @PostMapping("/create_user")
-    fun create(@RequestBody requestModel: UserRequestDto): HttpEntity<Any> {
+    fun create(
+        @RequestBody requestModel: UserRequestDto,
+    ): HttpEntity<Any> {
         val result = userInput.createUser(requestModel.toModel())
         return if (result.isSuccess) {
-            val links = listOf(
-                linkTo(WebMvcLinkBuilder.methodOn(AccessController::class.java).create(requestModel))
-                    .withSelfRel()
-            )
+            val links =
+                listOf(
+                    linkTo(WebMvcLinkBuilder.methodOn(AccessController::class.java).create(requestModel))
+                        .withSelfRel(),
+                )
             ResponseEntity(result.getOrNull()!!.toDto(links), HttpStatus.CREATED)
         } else {
             when (val exception = result.exceptionOrNull()) {
-                is UserAlreadyPresentException -> ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(exception.message)
+                is UserAlreadyPresentException ->
+                    ResponseEntity
+                        .status(HttpStatus.CONFLICT)
+                        .body(exception.message)
 
                 is PasswordToShortException -> ResponseEntity.badRequest().body(exception.message)
                 else -> ResponseEntity.internalServerError().build()
@@ -88,50 +117,64 @@ class AccessController(val userInput: UserInputBoundary) {
     @Operation(
         summary = "Login user",
         description = "Login user",
-        requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
-            content = [Content(
-                mediaType = "application/json",
-                schema = Schema(implementation = UserRequestModel::class)
-            )],
-            required = true
-        ),
+        requestBody =
+            SwaggerRequestBody(
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = UserRequestModel::class),
+                    ),
+                ],
+                required = true,
+            ),
         responses = [
             ApiResponse(
-                responseCode = "200", description = "Login user",
-                content = [Content(
-                    mediaType = "application/json",
-                    schema = Schema(implementation = UserResponseDto::class)
-                )]
+                responseCode = "200",
+                description = "Login user",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = UserResponseDto::class),
+                    ),
+                ],
             ),
             ApiResponse(
-                responseCode = "401", description = "Unauthorized",
-                content = [Content(
-                    mediaType = "application/json",
-                    schema = Schema(implementation = String::class)
-                )]
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = String::class),
+                    ),
+                ],
             ),
             ApiResponse(
-                responseCode = "500", description = "Internal server error",
-                content = [Content()]
-            )]
+                responseCode = "500",
+                description = "Internal server error",
+                content = [Content()],
+            ),
+        ],
     )
     @PostMapping("/login_user")
-    fun login(@RequestBody requestModel: LoginRequestDto): HttpEntity<Any> {
+    fun login(
+        @RequestBody requestModel: LoginRequestDto,
+    ): HttpEntity<Any> {
         val result = userInput.login(requestModel.toModel())
         return if (result.isSuccess) {
             val response = result.getOrNull()!!
-            val links = listOf(
-                linkTo(
-                    WebMvcLinkBuilder
-                        .methodOn(AccessController::class.java)
-                        .login(requestModel),
-                ).withSelfRel(),
-                linkTo(
-                    WebMvcLinkBuilder
-                        .methodOn(AccessController::class.java)
-                        .checkToken("token"),
-                ).withRel("check_token")
-            )
+            val links =
+                listOf(
+                    linkTo(
+                        WebMvcLinkBuilder
+                            .methodOn(AccessController::class.java)
+                            .login(requestModel),
+                    ).withSelfRel(),
+                    linkTo(
+                        WebMvcLinkBuilder
+                            .methodOn(AccessController::class.java)
+                            .checkToken("token"),
+                    ).withRel("check_token"),
+                )
             ResponseEntity(response.toDto(links), HttpStatus.CREATED)
         } else {
             when (val exception = result.exceptionOrNull()) {
@@ -148,49 +191,62 @@ class AccessController(val userInput: UserInputBoundary) {
     @Operation(
         summary = "Check user token",
         description = "Check user token",
-        requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
-            content = [Content()],
-            required = true
-        ),
+        requestBody =
+            SwaggerRequestBody(
+                content = [Content()],
+                required = true,
+            ),
         responses = [
             ApiResponse(
-                responseCode = "200", description = "Token is valid",
-                content = [Content(
-                    mediaType = "application/json",
-                    schema = Schema(implementation = TokenResponseDto::class)
-                )]
+                responseCode = "200",
+                description = "Token is valid",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = TokenResponseDto::class),
+                    ),
+                ],
             ),
             ApiResponse(
-                responseCode = "401", description = "Unauthorized",
-                content = [Content(
-                    mediaType = "application/json",
-                    schema = Schema(implementation = TokenErrorDto::class)
-                )]
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = TokenErrorDto::class),
+                    ),
+                ],
             ),
             ApiResponse(
-                responseCode = "500", description = "Internal server error",
-                content = [Content()]
-            )]
+                responseCode = "500",
+                description = "Internal server error",
+                content = [Content()],
+            ),
+        ],
     )
     @GetMapping("/check_token/{token}")
-    fun checkToken(@PathVariable token: String): HttpEntity<Any> {
+    fun checkToken(
+        @PathVariable token: String,
+    ): HttpEntity<Any> {
         val result = userInput.checkUserToken(token)
         return if (result.isSuccess) {
-            val links = listOf(
-                linkTo(WebMvcLinkBuilder.methodOn(AccessController::class.java).checkToken(token))
-                    .withSelfRel()
-            )
+            val links =
+                listOf(
+                    linkTo(WebMvcLinkBuilder.methodOn(AccessController::class.java).checkToken(token))
+                        .withSelfRel(),
+                )
             ResponseEntity(result.getOrNull()!!.toDto(links), HttpStatus.OK)
         } else {
             when (val exception = result.exceptionOrNull()) {
                 is TokenExpiredException, is UserNotFound, is InvalidTokenException -> {
-                    val links = listOf(
-                        linkTo(
-                            WebMvcLinkBuilder.methodOn(AccessController::class.java)
-                                .login(LoginRequestDto("username", "password"))
+                    val links =
+                        listOf(
+                            linkTo(
+                                WebMvcLinkBuilder
+                                    .methodOn(AccessController::class.java)
+                                    .login(LoginRequestDto("username", "password")),
+                            ).withRel("login"),
                         )
-                            .withRel("login")
-                    )
                     ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(TokenErrorDto(exception.message!!).add(links))
                 }
 
@@ -198,5 +254,4 @@ class AccessController(val userInput: UserInputBoundary) {
             }
         }
     }
-
 }

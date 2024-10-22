@@ -8,5 +8,5 @@ data class UserDataSourceRequestModel(
     val password: String,
     val role: Role,
     val now: LocalDateTime,
-    val oldPasswords: List<String>
+    val oldPasswords: List<String>,
 )

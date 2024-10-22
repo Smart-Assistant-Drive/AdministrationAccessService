@@ -4,16 +4,13 @@ import com.example.rest.businessLayer.adapter.LoginRequestModel
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 
-class LoginRequestDto @JsonCreator constructor(
-    @param:JsonProperty(
-        "username"
+class LoginRequestDto
+    @JsonCreator
+    constructor(
+        @param:JsonProperty("username")
+        val username: String,
+        @param:JsonProperty("password")
+        val password: String,
     )
-    val username: String,
-    @param:JsonProperty(
-        "password"
-    )
-    val password: String,
-)
 
-fun LoginRequestDto.toModel() =
-    LoginRequestModel(username, password)
+fun LoginRequestDto.toModel() = LoginRequestModel(username, password)

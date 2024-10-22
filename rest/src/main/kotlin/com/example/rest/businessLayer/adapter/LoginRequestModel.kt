@@ -1,6 +1,6 @@
 package com.example.rest.businessLayer.adapter
 
-data class LoginRequestModel (
+data class LoginRequestModel(
     val username: String,
-    val password: String
+    val password: String,
 )

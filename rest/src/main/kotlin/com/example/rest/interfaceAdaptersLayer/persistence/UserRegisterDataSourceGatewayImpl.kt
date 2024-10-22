@@ -28,9 +28,12 @@ class UserRegisterDataSourceGatewayImpl(private val mongoTemplate: MongoTemplate
                 .append("password", requestModel.password)
                 .append("role", requestModel.role.name)
                 .append("created", requestModel.now)
-                .append("oldPasswords", requestModel.oldPasswords.mapIndexed { index, password ->
-                    Document("order", index).append("password", password)
-                })
+                .append(
+                    "oldPasswords",
+                    requestModel.oldPasswords.mapIndexed { index, password ->
+                        Document("order", index).append("password", password)
+                    },
+                ),
         )
     }
 
@@ -40,7 +43,7 @@ class UserRegisterDataSourceGatewayImpl(private val mongoTemplate: MongoTemplate
             LoginDataSourceResponseModel(
                 it.getString("name"),
                 it.getString("password"),
-                Role.valueOf(it.getString("role"))
+                Role.valueOf(it.getString("role")),
             )
         }
     }

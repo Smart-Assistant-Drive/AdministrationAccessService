@@ -9,5 +9,3 @@ class RestHateoasApplication
 fun main(args: Array<String>) {
     runApplication<RestHateoasApplication>(*args)
 }
-
-

@@ -8,21 +8,22 @@ import org.springframework.boot.actuate.health.HealthIndicator
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
 
-
 @Component("db")
 @ConditionalOnEnabledHealthIndicator("db")
-class HealthCheck(val mongoTemplate: MongoTemplate) : HealthIndicator {
-
+class HealthCheck(
+    val mongoTemplate: MongoTemplate,
+) : HealthIndicator {
     var logger: Logger = LoggerFactory.getLogger(HealthCheck::class.java)
-
 
     override fun health(): Health {
         val errorCode = check() // perform some specific health check
         if (errorCode != 0) {
-            return Health.down()
+            return Health
+                .down()
                 .build()
         }
-        return Health.up()
+        return Health
+            .up()
             .build()
     }
 

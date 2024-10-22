@@ -1,5 +1,5 @@
 package com.example.rest.businessLayer.adapter
 
-data class TokenRequestModel (
-    val token: String
+data class TokenRequestModel(
+    val token: String,
 )

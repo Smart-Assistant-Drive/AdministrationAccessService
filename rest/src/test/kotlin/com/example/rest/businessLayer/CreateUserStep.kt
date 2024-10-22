@@ -11,34 +11,39 @@ import io.cucumber.junit.Cucumber
 import io.cucumber.junit.CucumberOptions
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.kotlin.*
-
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 
 @RunWith(Cucumber::class)
 @CucumberOptions(
     plugin = ["pretty", "html:target/cucumber-report.html"],
-    features = ["src/test/resources"]
+    features = ["src/test/resources"],
 )
-class CreateUserStep() {
-
+class CreateUserStep {
     private var name: String? = null
     private var password: String? = null
     private var role: Role? = null
     private val interaction: UserRegisterUseCase
-    private val userRegisterDataSourceGateway = mock<UserRegisterDataSourceGateway> {
-        on { save(any()) } doAnswer {}
-        on { existsByName(anyString()) } doReturn false
-    }
-    private val userSecurity = mock<UserSecurity> {
-        on { getHash(anyString()) } doReturn "hashed"
-    }
-
+    private val userRegisterDataSourceGateway =
+        mock<UserRegisterDataSourceGateway> {
+            on { save(any()) } doAnswer {}
+            on { existsByName(anyString()) } doReturn false
+        }
+    private val userSecurity =
+        mock<UserSecurity> {
+            on { getHash(anyString()) } doReturn "hashed"
+        }
 
     init {
-        interaction = UserRegisterUseCase(
-            userRegisterDataSourceGateway,
-            userSecurity
-        )
+        interaction =
+            UserRegisterUseCase(
+                userRegisterDataSourceGateway,
+                userSecurity,
+            )
     }
 
     @Given("the user to create is {string}")
