@@ -1,6 +1,6 @@
 package com.example.rest.businessLayer
 
-import com.example.rest.businessLayer.adapter.UserRequestModel
+import com.example.rest.businessLayer.adapter.user.UserRequestModel
 import com.example.rest.businessLayer.boundaries.UserRegisterDataSourceGateway
 import com.example.rest.businessLayer.boundaries.UserSecurity
 import com.example.rest.domainLayer.Role

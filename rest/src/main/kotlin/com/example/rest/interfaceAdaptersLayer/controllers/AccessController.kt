@@ -1,6 +1,6 @@
 package com.example.rest.interfaceAdaptersLayer.controllers
 
-import com.example.rest.businessLayer.adapter.UserRequestModel
+import com.example.rest.businessLayer.adapter.user.UserRequestModel
 import com.example.rest.businessLayer.boundaries.UserInputBoundary
 import com.example.rest.businessLayer.exception.InvalidTokenException
 import com.example.rest.businessLayer.exception.PasswordToShortException

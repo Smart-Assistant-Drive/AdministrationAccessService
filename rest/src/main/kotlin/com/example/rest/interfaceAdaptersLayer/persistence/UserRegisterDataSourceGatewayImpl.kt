@@ -1,7 +1,7 @@
 package com.example.rest.interfaceAdaptersLayer.persistence
 
-import com.example.rest.businessLayer.adapter.LoginDataSourceResponseModel
-import com.example.rest.businessLayer.adapter.UserDataSourceRequestModel
+import com.example.rest.businessLayer.adapter.login.LoginDataSourceResponseModel
+import com.example.rest.businessLayer.adapter.user.UserDataSourceRequestModel
 import com.example.rest.businessLayer.boundaries.UserRegisterDataSourceGateway
 import com.example.rest.domainLayer.Role
 import org.bson.Document
@@ -9,8 +9,9 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.index.Index
 
-class UserRegisterDataSourceGatewayImpl(private val mongoTemplate: MongoTemplate) : UserRegisterDataSourceGateway {
-
+class UserRegisterDataSourceGatewayImpl(
+    private val mongoTemplate: MongoTemplate,
+) : UserRegisterDataSourceGateway {
     init {
         if (!mongoTemplate.collectionExists("users")) {
             mongoTemplate.createCollection("users")
@@ -18,9 +19,7 @@ class UserRegisterDataSourceGatewayImpl(private val mongoTemplate: MongoTemplate
         mongoTemplate.indexOps("users").ensureIndex(Index().on("name", Sort.Direction.ASC).unique())
     }
 
-    override fun existsByName(name: String): Boolean {
-        return mongoTemplate.getCollection("users").find(Document("name", name)).first() != null
-    }
+    override fun existsByName(name: String): Boolean = mongoTemplate.getCollection("users").find(Document("name", name)).first() != null
 
     override fun save(requestModel: UserDataSourceRequestModel) {
         mongoTemplate.getCollection("users").insertOne(

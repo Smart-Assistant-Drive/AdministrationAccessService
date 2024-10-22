@@ -1,11 +1,11 @@
 package com.example.rest.businessLayer
 
-import com.example.rest.businessLayer.adapter.LoginRequestModel
-import com.example.rest.businessLayer.adapter.LoginResponseModel
 import com.example.rest.businessLayer.adapter.TokenResponseModel
-import com.example.rest.businessLayer.adapter.UserDataSourceRequestModel
-import com.example.rest.businessLayer.adapter.UserRequestModel
-import com.example.rest.businessLayer.adapter.UserResponseModel
+import com.example.rest.businessLayer.adapter.login.LoginRequestModel
+import com.example.rest.businessLayer.adapter.login.LoginResponseModel
+import com.example.rest.businessLayer.adapter.user.UserDataSourceRequestModel
+import com.example.rest.businessLayer.adapter.user.UserRequestModel
+import com.example.rest.businessLayer.adapter.user.UserResponseModel
 import com.example.rest.businessLayer.boundaries.UserInputBoundary
 import com.example.rest.businessLayer.boundaries.UserRegisterDataSourceGateway
 import com.example.rest.businessLayer.boundaries.UserSecurity

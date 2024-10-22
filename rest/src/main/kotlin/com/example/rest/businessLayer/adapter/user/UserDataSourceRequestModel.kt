@@ -1,4 +1,4 @@
-package com.example.rest.businessLayer.adapter
+package com.example.rest.businessLayer.adapter.user
 
 import com.example.rest.domainLayer.Role
 import java.time.LocalDateTime

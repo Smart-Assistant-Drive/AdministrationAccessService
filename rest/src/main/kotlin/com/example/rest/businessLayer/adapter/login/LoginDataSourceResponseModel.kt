@@ -1,4 +1,4 @@
-package com.example.rest.businessLayer.adapter
+package com.example.rest.businessLayer.adapter.login
 
 import com.example.rest.domainLayer.Role
 

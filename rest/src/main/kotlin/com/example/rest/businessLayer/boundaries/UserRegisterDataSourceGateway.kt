@@ -1,7 +1,7 @@
 package com.example.rest.businessLayer.boundaries
 
-import com.example.rest.businessLayer.adapter.LoginDataSourceResponseModel
-import com.example.rest.businessLayer.adapter.UserDataSourceRequestModel
+import com.example.rest.businessLayer.adapter.login.LoginDataSourceResponseModel
+import com.example.rest.businessLayer.adapter.user.UserDataSourceRequestModel
 
 interface UserRegisterDataSourceGateway {
     fun existsByName(name: String): Boolean

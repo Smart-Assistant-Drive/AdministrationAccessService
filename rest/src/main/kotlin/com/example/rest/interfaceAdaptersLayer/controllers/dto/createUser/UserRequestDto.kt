@@ -1,6 +1,6 @@
 package com.example.rest.interfaceAdaptersLayer.controllers.dto.createUser
 
-import com.example.rest.businessLayer.adapter.UserRequestModel
+import com.example.rest.businessLayer.adapter.user.UserRequestModel
 import com.example.rest.domainLayer.Role
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
