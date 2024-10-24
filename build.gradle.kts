@@ -9,7 +9,6 @@ plugins {
 }
 
 group = "org.example"
-version = "1.0-SNAPSHOT"
 
 gitSemVer {
     maxVersionLength.set(20)
