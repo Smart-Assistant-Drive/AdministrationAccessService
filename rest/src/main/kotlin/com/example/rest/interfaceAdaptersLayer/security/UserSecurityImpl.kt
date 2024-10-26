@@ -2,6 +2,7 @@ package com.example.rest.interfaceAdaptersLayer.security
 
 import com.example.rest.businessLayer.boundaries.UserSecurity
 import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
@@ -42,6 +43,8 @@ class UserSecurityImpl(
     override fun validateToken(token: String): Result<Boolean> =
         try {
             Result.success(!isTokenExpired(token))
+        } catch (e: ExpiredJwtException) {
+            Result.success(false)
         } catch (e: Exception) {
             Result.failure(IllegalArgumentException("Invalid token"))
         }
