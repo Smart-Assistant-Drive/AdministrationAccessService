@@ -239,15 +239,7 @@ class AccessController(
         } else {
             when (val exception = result.exceptionOrNull()) {
                 is TokenExpiredException, is UserNotFound, is InvalidTokenException -> {
-                    val links =
-                        listOf(
-                            linkTo(
-                                WebMvcLinkBuilder
-                                    .methodOn(AccessController::class.java)
-                                    .login(LoginRequestDto("username", "password")),
-                            ).withRel("login"),
-                        )
-                    ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(TokenErrorDto(exception.message!!).add(links))
+                    ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.message!!)
                 }
 
                 else -> ResponseEntity.internalServerError().build()
